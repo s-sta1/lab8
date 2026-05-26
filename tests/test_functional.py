@@ -144,4 +144,3 @@ def test_transfer_valid_with_tenant_agreement():
 
     is_valid = manager.check_transfers_tenant()
     assert is_valid == False
-

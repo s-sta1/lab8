@@ -1,11 +1,12 @@
 from datetime import datetime
 
-from src.models import Apartment, Bill, Parameters, Tenant, ApartmentEvent, TenantBlacklistEntry, TenantSettlement, Transfer, ApartmentSettlement
+from src.models import Apartment, Bill, Parameters, Tenant, ApartmentEvent
+from src.models import TenantBlacklistEntry, TenantSettlement, Transfer, ApartmentSettlement
 from typing import List, Tuple
 
 class Manager:
-    def __init__(self, parameters: Parameters):
-        self.parameters = parameters 
+    def __init__(self, parameters:Parameters):
+        self.parameters = parameters
 
         self.apartments = {}
         self.tenants = {}
@@ -13,7 +14,7 @@ class Manager:
         self.bills = []
         self.tenants_blacklist = []
         self.apartment_events = []
-       
+
         self.load_data()
 
     def load_data(self):
@@ -29,8 +30,8 @@ class Manager:
     def generate_apartment_events_report(self, apartment_key: str, only_unsolved: bool = True) -> List[ApartmentEvent]:
         if apartment_key not in self.apartments:
             raise ValueError("Apartment key does not exist")
-        return [
-            event for event in self.apartment_events 
+        return[
+            event for event in self.apartment_events
             if event.apartment == apartment_key and (not event.solved or not only_unsolved)
         ]
 
@@ -43,14 +44,18 @@ class Manager:
     def get_apartment(self, apartment_key: str) -> Apartment | None:
         return self.apartments.get(apartment_key, None)
 
-    def get_apartment_costs(self, apartment_key: str, year: int = None, month: int = None) -> float | None:
+    def get_apartment_costs(self,
+                            apartment_key: str,
+                            year: int = None,
+                            month: int = None) -> float | None:
         if month is not None and (month < 1 or month > 12):
             raise ValueError("Month must be between 1 and 12")
         if apartment_key not in self.apartments:
             return None
         total_cost = 0.0
         for bill in self.bills:
-            if bill.apartment == apartment_key and (year is None or bill.settlement_year == year) and (month is None or bill.settlement_month == month):
+            if bill.apartment == apartment_key and (year is None or
+                                                    bill.settlement_year == year) and (month is None or bill.settlement_month == month):
                 total_cost += bill.amount_pln
         return total_cost
 
@@ -99,7 +104,10 @@ class Manager:
 
         for tenant_settlement in tenant_settlements:
             tenant_transfers = [transfer for transfer in self.transfers if self.tenants[transfer.tenant].name == tenant_settlement.tenant and transfer.settlement_year == year and transfer.settlement_month == month]
-            total_paid = sum([transfer.amount_pln for transfer in tenant_transfers if transfer.settlement_year == year and transfer.settlement_month == month])
+            total_paid = sum([transfer.amount_pln for
+                              transfer in tenant_transfers if
+                              transfer.settlement_year == year and
+                              transfer.settlement_month == month])
             if total_paid < tenant_settlement.total_due_pln:
                 output.append(tenant_settlement.tenant)
         return output

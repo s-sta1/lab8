@@ -1,0 +1,16 @@
+from src.manager import Manager
+from src.models import Parameters, ApartmentEvent
+
+def test_smth():
+    
+    manager = Manager(Parameters)
+    
+    assert manager.apartament_events == []
+    
+    manager.load_additional_data()
+    
+    assert manager.apartment_events[len] > 0
+    
+    
+    for event in manager.apartment_events:
+        assert isinstance(event, ApartmentEvent)

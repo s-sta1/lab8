@@ -1,7 +1,7 @@
 import pytest
 
 from pydantic import ValidationError
-from src.models import Apartment, Tenant
+from src.models import Apartment, Tenant, ApartmentEvent
 
 
 def test_apartment_fields():
@@ -84,3 +84,51 @@ def test_tenant_from_dict():
     with pytest.raises(ValidationError):
         data['rent_pln'] = "1500PLN" # Invalid field
         wrong_tenant = Tenant(**data)
+        
+# - - - - - - - -
+        
+def test_apartment_event():
+    
+    Event = ApartmentEvent(
+        
+        date = '2024-06-1',
+        apartment = 'apart-polanka',
+        amount_pln = 50.0,
+        tenant = 'tenant-1',
+        description = 'Wymiana zarowki kuchnia',
+        solved = True
+        
+    )
+    
+    assert Event.date == '2024-06-1'
+    assert Event.apartment == 'apart-polanka'
+    assert Event.amount_pln == 50.0
+    assert Event.tenant == 'tenant-1'
+    assert Event.description == 'Wymiana zarowki kuchnia'
+    assert Event.solved == True
+    
+    
+    
+    
+def test_apartment_event_from_dict():
+    data = {
+        "date": "2024-06-1",
+        "apartment": "apart-polanka",
+        "amount_pln": 50.0,
+        "tenant": "tenant-1",
+        "description": "Wymiana zarowki kuchnia",
+        "solved": True
+    }
+    
+    event = ApartmentEvent(**data)
+
+    assert event.date == data["date"]
+    assert event.apartment == data["apartment"]
+    assert event.amount_pln == data["amount_pln"]
+    assert event.tenant == data["tenant"]
+    assert event.description == data["description"]
+    assert event.solved == data["solved"]
+    
+    with pytest.raises(ValidationError):
+        data['amount_pln'] = "50PLN" # Invalid field
+        wrong_event = ApartmentEvent(**data)
